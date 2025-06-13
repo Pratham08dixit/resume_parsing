@@ -71,9 +71,6 @@ reportlab
 - **PDF Report**: Download comprehensive analysis report
 
 
-  ```
-
-
 ### Development Setup
 ```bash
 # Clone your fork
