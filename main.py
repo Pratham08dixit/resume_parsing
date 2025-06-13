@@ -12,16 +12,16 @@ from reportlab.lib.units import inch
 import io
 import time
 
-# Load API Keys from .env
+
 load_dotenv()
 
-# Get API key from environment or Streamlit secrets
+# Get API key from environment 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY")
 
 if not GEMINI_API_KEY:
-    st.error("⚠️ Missing GEMINI_API_KEY. Please add it to your Streamlit secrets or .env file")
+    st.error("⚠ Missing GEMINI_API_KEY.")
 
-# Configure Gemini AI
+# Configuring API
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
@@ -150,7 +150,7 @@ def generate_pdf_report(analysis_data, structured_data, ats_data):
         parent=styles['Heading1'],
         fontSize=24,
         spaceAfter=30,
-        alignment=1  # Center alignment
+        alignment=1  # Centre focused 
     )
     story.append(Paragraph("Resume Analysis Report", title_style))
     story.append(Spacer(1, 20))
@@ -210,7 +210,7 @@ def generate_pdf_report(analysis_data, structured_data, ats_data):
     return buffer
 
 # Streamlit UI
-st.title("🤖 AI-Powered Resume Analyzer")
+st.title(" AI-Powered Resume Analyzer")
 st.caption("Comprehensive resume analysis with structured parsing and ATS recommendations")
 
 uploaded_file = st.file_uploader("Upload Resume (PDF, DOCX, or TXT)", type=["pdf", "docx", "txt"])
@@ -219,14 +219,14 @@ analyze_button = st.button("🔍 Analyze Resume")
 if analyze_button and uploaded_file:
     st.info("⏳ Processing your resume...")
 
-    # Progress bar setup with container for better visibility
+    # Progress bar 
     progress_container = st.container()
     with progress_container:
         progress_bar = st.progress(0)
         status_text = st.empty()
 
     # Step 1: Extract resume text
-    status_text.text("📄 Extracting text from resume...")
+    status_text.text(" Extracting text from resume...")
     progress_bar.progress(10)
 
     if uploaded_file.name.endswith(".pdf"):
@@ -241,14 +241,14 @@ if analyze_button and uploaded_file:
         st.stop()
 
     progress_bar.progress(20)
-    status_text.text("✅ Text extraction complete!")
+    status_text.text(" Text extraction completed")
     time.sleep(0.5)
 
     # Create tabs for different analyses
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Analysis", "🏗️ Structured Data", "🎯 ATS & Jargon", "📄 PDF Report"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Analysis", "Structured Data", "ATS & Jargon", "PDF Report"])
 
     with tab1:
-        st.subheader("📊 Resume Analysis")
+        st.subheader("Resume Analysis")
 
         # Step 2: Main Analysis
         status_text.text("🔍 Analyzing resume content...")
@@ -257,7 +257,7 @@ if analyze_button and uploaded_file:
         feedback_raw = analyze_resume(resume_text)
 
         progress_bar.progress(50)
-        status_text.text("✅ Resume analysis complete!")
+        status_text.text("Resume analysis complete!")
         time.sleep(0.5)
 
         try:
@@ -284,22 +284,22 @@ if analyze_button and uploaded_file:
                 st.json(analysis_data)
 
         except Exception as e:
-            st.warning("⚠️ Could not parse JSON feedback. Showing raw output:")
+            st.warning("Could not parse JSON feedback.")
             st.text_area("Raw Feedback", feedback_raw, height=200)
             st.error(f"Error details: {str(e)}")
             analysis_data = {}
 
     with tab2:
-        st.subheader("🏗️ Structured Resume Data")
+        st.subheader("Structured Resume Data")
 
         # Step 3: Structured Parsing
-        status_text.text("🏗️ Parsing structured data...")
+        status_text.text("Parsing structured data...")
         progress_bar.progress(65)
 
         structured_raw = parse_structured_resume(resume_text)
 
         progress_bar.progress(75)
-        status_text.text("✅ Structured parsing complete!")
+        status_text.text("Structured parsing complete!")
         time.sleep(0.5)
 
         try:
@@ -316,29 +316,29 @@ if analyze_button and uploaded_file:
 
             # Download structured data
             st.download_button(
-                "⬇️ Download Structured Data (JSON)",
+                "Download Structured Data (JSON)",
                 json.dumps(structured_data, indent=2),
                 file_name="structured_resume.json",
                 mime="application/json"
             )
 
         except Exception as e:
-            st.warning("⚠️ Could not parse structured data. Showing raw output:")
+            st.warning("Could not parse structured data.")
             st.text_area("Raw Structured Data", structured_raw, height=200)
             st.error(f"Error details: {str(e)}")
             structured_data = {}
 
     with tab3:
-        st.subheader("🎯 ATS & Jargon Analysis")
+        st.subheader("ATS & Jargon Analysis")
 
         # Step 4: ATS and Jargon Analysis
-        status_text.text("🎯 Analyzing ATS compatibility and jargon...")
+        status_text.text("Analyzing ATS compatibility and jargon...")
         progress_bar.progress(85)
 
         ats_raw = detect_jargon_and_ats_issues(resume_text)
 
         progress_bar.progress(95)
-        status_text.text("✅ ATS analysis complete!")
+        status_text.text("ATS analysis complete!")
         time.sleep(0.5)
 
         try:
@@ -352,54 +352,54 @@ if analyze_button and uploaded_file:
 
             # Display ATS recommendations
             if ats_data.get('ats_recommendations'):
-                st.subheader("🎯 ATS-Friendly Recommendations")
+                st.subheader("ATS-Friendly Recommendations")
                 for rec in ats_data['ats_recommendations']:
                     st.write(f"• {rec}")
 
             # Display jargon detection
             if ats_data.get('jargon_detected') or ats_data.get('filler_phrases'):
-                st.subheader("⚠️ Jargon & Filler Phrases Detected")
+                st.subheader("Jargon & Filler Phrases Detected")
                 jargon_list = ats_data.get('jargon_detected', []) + ats_data.get('filler_phrases', [])
                 for phrase in jargon_list:
                     st.write(f"• {phrase}")
 
             # Display keyword suggestions
             if ats_data.get('keyword_suggestions'):
-                st.subheader("🔑 Keyword Suggestions")
+                st.subheader("Keyword Suggestions")
                 for keyword in ats_data['keyword_suggestions']:
                     st.write(f"• {keyword}")
 
             # Full ATS data
-            with st.expander("📋 Complete ATS Analysis", expanded=False):
+            with st.expander("Complete ATS Analysis", expanded=False):
                 st.json(ats_data)
 
         except Exception as e:
-            st.warning("⚠️ Could not parse ATS data. Showing raw output:")
+            st.warning("Could not parse ATS data. Showing raw output:")
             st.text_area("Raw ATS Data", ats_raw, height=200)
             st.error(f"Error details: {str(e)}")
             ats_data = {}
 
     with tab4:
-        st.subheader("📄 PDF Report Generation")
+        st.subheader("PDF Report Generation")
 
         if 'analysis_data' in locals() and 'structured_data' in locals() and 'ats_data' in locals():
             try:
                 # Step 5: Generate PDF report
-                status_text.text("📄 Generating PDF report...")
+                status_text.text("Generating PDF report....")
                 progress_bar.progress(98)
 
                 pdf_buffer = generate_pdf_report(analysis_data, structured_data, ats_data)
 
                 # Complete!
                 progress_bar.progress(100)
-                status_text.text("🎉 All analysis complete!")
+                status_text.text("All analysis completed")
 
-                # Clean up progress indicators after a short delay
+                # Clean up progress indicators 
                 time.sleep(1.5)
                 progress_bar.empty()
                 status_text.empty()
 
-                st.success("✅ PDF report generated successfully!")
+                st.success("PDF report generated successfully")
 
                 # Download button for PDF
                 st.download_button(
@@ -409,7 +409,7 @@ if analyze_button and uploaded_file:
                     mime="application/pdf"
                 )
 
-                st.info("📋 The PDF report includes:")
+                st.info("The PDF report includes:")
                 st.write("• Resume quality score and analysis")
                 st.write("• Sections detected and missing")
                 st.write("• Skills sentiment summary")
@@ -418,13 +418,13 @@ if analyze_button and uploaded_file:
                 st.write("• Jargon and filler phrase detection")
 
             except Exception as e:
-                st.error(f"❌ Error generating PDF report: {str(e)}")
+                st.error(f"Error while generating PDF report: {str(e)}")
         else:
-            st.warning("⚠️ Please complete the analysis in other tabs first to generate the PDF report.")
+            st.warning("lease complete the analysis first to generate the PDF report.")
 
-# Sidebar with information
+# Sidebar with instructions for someone who doesn't know working 
 with st.sidebar:
-    st.header("📝 Instructions")
+    st.header("Instructions")
     st.write("""
     1. Upload your resume (PDF, DOCX, or TXT)
     2. Click "Analyze Resume"
